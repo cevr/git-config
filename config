@@ -1,0 +1,57 @@
+[core]
+	symlinks = true
+	autocrlf = true
+	fscache = true
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = true
+	ui = auto
+[help]
+	format = html
+[rebase]
+	autosquash = true
+[alias]
+    st = status
+    ci = commit
+    cm = commit -m
+    co = checkout
+    cb = checkout -b
+    df = diff
+    dft = difftool --dir-diff
+    mt = mergetool
+    br = branch
+    rb = rebase
+    rbi = rebase -i
+    pl = pull
+    plom = pull origin master
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    add-all = !"git add -A && git status"
+    # --force-with-lease does additional safety verifications from remote before forcing push
+    good = push --force-with-lease
+    up = !"git fetch && git rebase origin/master"
+    standup = !"git log --reverse --branches --since='$(if [[ "Mon" == "$(date +%a)" ]]; then echo "last friday"; else echo "yesterday"; fi)' --author=$(git config --get user.email) --format=format:'%C(cyan) %ad %C(yellow)%h %Creset %s %Cgreen%d' --date=local"
+    # Cancels last commit but PRESERVES changes
+    cancel = reset --soft HEAD~1
+    # Undo last commit, ***ALL CHANGES ARE LOST***
+    undo = reset --hard HEAD~1
+    # cleaning branches
+    bc = !"git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs --no-run-if-empty git branch -d"
+    bcf = !"git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs --no-run-if-empty git branch -D"
+    # Sub-module aliases
+    sstash = !"git stash && git submodule foreach 'git stash'"
+    spop = !"git stash pop && git submodule foreach 'git stash pop'"
+    sdiff = !"git diff && git submodule foreach 'git diff'"
+    # Update and rebase a specified sub-module
+    spull = !"git submodule update --rebase --remote $1"
+    # Update and rebase all sub-modules
+    spull-all = !"git submodule update --rebase --remote"
+    sst = !"git st && git submodule foreach 'git st'"
+    sdft = !"git dft && git submodule foreach 'git dft'"
+    supdate = !"git submodule init && git submodule update"
+[push]
+    default = current
+    # On a repo push, will attempt to push any unpushed sub-module changes.
+    # If a sub-module push fails during this operation, the main repo push will also fail.
+    recurseSubmodules = on-demand
